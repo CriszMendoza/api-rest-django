@@ -15,11 +15,20 @@ COPY requirements.txt .
 COPY requirements.dev.txt .
 
 ARG DEV=false
+
+RUN apt-get update && \
+    apt-get -y install sudo
+
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt && \
     if [ $DEV = "true" ]; \
         then pip install -r requirements.dev.txt ; \
-    fi && \
-    adduser --disabled-password django-user
+    fi
+
+RUN adduser \
+        --disabled-password \
+        --no-create-home \
+        django-user && \
+    usermod -aG sudo django-user
 
 USER django-user
